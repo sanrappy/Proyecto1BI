@@ -8,4 +8,5 @@ Integrantes:
 
 - El archivo con nombre 'prueba_clasificados.csv' contiene las reseñas en 'particion_prueba_estudiantes.csv' clasificadas por nuestro mejor algoritmo (SVM).
 - El archivo con nombre 'Proyecto1 BI - Etapa 1.ipynb' contiene el notebook ejecutado con todo el desarrollo del proyecto.
+- Los otros entregables solicitados se encuentran en la Wiki.
 
