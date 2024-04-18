@@ -100,6 +100,9 @@ class Item(BaseModel):
 
 class Review(BaseModel):
     review: str
+    
+class DataFile(BaseModel):
+    file_path: str
 
 @app.get("/")
 def read_root():
@@ -115,7 +118,6 @@ def read_item(item_id: int, q: Union[str, None] = None, m: Union[str, None] = No
 @app.put("/items/{item_id}")
 def update_item(item_id: int, item: Item):
     return {"item_name": item.name, "item_id": item_id}
-
 
 @app.post("/retrain_model_with_new_datafile")
 async def retrain_model_with_new_datafile(file_path: Union[str, None] = None):
@@ -155,7 +157,6 @@ async def retrain_model_with_new_datafile(file_path: Union[str, None] = None):
         pickle.dump(model, f, recurse=True)
 
     return {"message": "Model Retrained Successfully"}
-    
     
 @app.get("/test_model")
 async def test_model():
