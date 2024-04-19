@@ -2,14 +2,21 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import Parrafo from './Parrafo';
+import Subarchivo from './Subarchivo';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <Routes>
+        <Route exact path="/" element={<App />} />
+        <Route path="/parrafo" element={<Parrafo />} />
+        <Route path="/subarchivo" element={<Subarchivo />} />
+      </Routes>
     </BrowserRouter>
   </React.StrictMode>
 );
