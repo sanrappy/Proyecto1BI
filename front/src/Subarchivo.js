@@ -44,6 +44,26 @@ const Subarchivo = () => {
         console.error('There was a problem with the fetch operation: ', error);
     }
 }
+    async function handleResults(event) {
+        event.preventDefault();
+        try {
+            const response = await fetch('http://localhost:8000/test_model', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error('There was a problem with the fetch operation: ', error);
+        }
+    }
 
     return (
         <>
@@ -91,7 +111,9 @@ const Subarchivo = () => {
             <form onSubmit={handleSubmit}>
             <input type="file" ref={file} />
             <button type="submit">Submit</button>
+            
         </form>
+        <button onClick={handleResults}>Mostrar resultados</button>
             </main>
         </>
     );
