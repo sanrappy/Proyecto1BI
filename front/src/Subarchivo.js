@@ -5,45 +5,50 @@ import React, { createRef, useState } from "react";
 
 const Subarchivo = () => {
     const file = createRef();
+    const [fileName, setFileName] = useState('Seleccione un archivo');
+    const [mensaje, setMensaje] = useState('');
+    const [resultados, setResultados] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleFileChange = (e) => {
+        setFileName(e.target.files[0].name);
+    }
 
     async function handleSubmit(event) {
-    event.preventDefault();
-    try {
+        event.preventDefault();
+        try {
 
-        if (!file.current.files[0]) {
-            console.log('No file selected');
-            return;
-        }else{
-            console.log("file ok!");
+            if (!file.current.files[0]) {
+                console.log('No file selected');
+                return;
+            } else {
+                console.log("file ok!");
+            }
+
+            setIsLoading(true);
+
+            const formData = new FormData();
+            formData.append('file', file.current.files[0]);
+
+            console.log('Sending: ', formData);
+
+            const response = await fetch('http://localhost:8000/retrain_model_with_new_datafile', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log(data);
+            setIsLoading(false);
+            setMensaje(data['message']);
+        } catch (error) {
+            console.error('There was a problem with the fetch operation: ', error);
         }
-
-        const formData = {
-            file_path: file.current.files[0].name
-        };
-
-        console.log('Sending: ', formData);
-
-        const response = await fetch('http://localhost:8000/retrain_model_with_new_datafile', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        else {
-            alert("Archivo subido");
-        }
-
-        const data = await response.json();
-        console.log(data);
-    } catch (error) {
-        console.error('There was a problem with the fetch operation: ', error);
     }
-}
     async function handleResults(event) {
         event.preventDefault();
         try {
@@ -60,6 +65,8 @@ const Subarchivo = () => {
 
             const data = await response.json();
             console.log(data);
+            setResultados(data);
+
         } catch (error) {
             console.error('There was a problem with the fetch operation: ', error);
         }
@@ -84,37 +91,35 @@ const Subarchivo = () => {
                 </nav>
             </div>
             <main>
-                {/*<div className="flex items-center justify-center space-y-4 mx-auto h-screen">
+                <div className="flex items-center justify-center space-y-4 mx-auto h-screen">
                     <div className="w-2/3 space-y-4 mx-auto h-1/3">
                         <form onSubmit={handleSubmit}>
-                            <div class="flex items-center justify-center w-full">
-                                <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-24 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 hover:bg-gray-100">
-                                    <div class="flex flex-col items-center justify-center pt-5 pb-5">
-                                        <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                                        </svg>
-                                        <p class=" text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Presione para subir un archivo .csv.</span></p>
-                                    </div>
-                                    <input id="dropzone-file" type="file" name="flupload" accept=".csv" ref={file}/>
+                            <div className="flex items-center justify-center w-full">
+                                <label className="w-auto flex flex-col items-center px-4 py-6 bg-white text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue hover:text-blue-900">
+                                    <svg className="w-8 h-8" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path d="M10 4a2 2 0 00-2 2v4a2 2 0 002 2 2 2 0 002-2V6a2 2 0 00-2-2zm0 12a6 6 0 100-12 6 6 0 000 12z" />
+                                    </svg>
+                                    <span className="mt-2 text-base leading-normal">{fileName}</span>
+                                    <input type='file' className="hidden" ref={file} onChange={handleFileChange} />
                                 </label>
+                                <button className="ml-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700" type="submit">Enviar</button>
                             </div>
-                            <button
-                                className="inline-flex h-15 items-center justify-center rounded-md border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-blue-600/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-blue-300 dark:bg-blue-600 dark:hover:bg-blue-600 dark:hover:text-gray-900 dark:focus-visible:ring-gray-300 w-full"
-                                type="submit"
-                                value="Submit"
-                            >
-                                Analizar archivo de reseñas
-                            </button>
                         </form>
+                        {isLoading ? (
+                            <div className="flex text-xs justify-center mx-auto font-mono">Loading...</div>
+                        ) : (
+                            mensaje && (
+                                <div className="flex text-xs justify-center mx-auto font-mono">{mensaje}</div>
+                            )
+                        )}
+                        <button className="ml-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full" onClick={handleResults}>Mostrar resultados</button>
+                        {resultados && Object.entries(resultados).map(([key, value]) => (
+                            <div className="flex text-[10px] justify-center leading-[10px] font-mono mx-auto">{key}: {value}</div>
+                        ))}
                     </div>
-            </div>*/}
-            <form onSubmit={handleSubmit}>
-            <input type="file" ref={file} />
-            <button type="submit">Submit</button>
-            
-        </form>
-        <button onClick={handleResults}>Mostrar resultados</button>
-            </main>
+                </div>
+
+            </main >
         </>
     );
 }

@@ -1,7 +1,7 @@
 # ----------------------------- DEPENDENCIAS -----------------------------
 
 from typing import Union
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import json
@@ -65,10 +65,10 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/retrain_model_with_new_datafile")
-async def retrain_model_with_new_datafile(file_path: DataFile = None):
+async def retrain_model_with_new_datafile(file: UploadFile = File(...)):
 
-    if file_path is None:
-        raise HTTPException(status_code=404, detail="No file path provided")
+    ##if file_path is None:
+        ##raise HTTPException(status_code=404, detail="No file path provided")
     
     # Cargar el nuevo archivo de datos sobre el anterior.
     global df
@@ -77,9 +77,10 @@ async def retrain_model_with_new_datafile(file_path: DataFile = None):
     global X_train, X_test, y_train, y_test
     
     try:
-        file_path_relative = f"../data/{file_path.file_path}"
-        print(file_path_relative)
-        df = pd.read_csv(file_path_relative, sep=',')
+        ##file_path_relative = f"../data/{file_path.file_path}"
+        ##print(file_path_relative)
+        ##df = pd.read_csv(file_path_relative, sep=',')
+        df = pd.read_csv(file.file, sep=',')
         
         # Verifica si el dataframe tiene exactamente dos columnas
         if len(df.columns) != 2:
