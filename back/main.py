@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import json
+import os
 
 import nltk
 import pandas as pd
@@ -55,15 +56,14 @@ df = pd.read_csv("../data/tipo2_entrenamiento_estudiantes.csv", sep=',', encodin
 X_train, X_test, y_train, y_test = train_test_split(df['Review'], df['Class'], test_size=0.2, random_state=1)
 
 classes = sorted(df['Class'].unique())  # Clases: 1, 2, 3, 4 y 5.
+
 with open('logistical_optimal_pipeline.pkl', 'rb') as f:
     model = pickle.load(f)
 
 # ----------------------------- API ENDPOINTS -----------------------------
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
 
+# reentrena el modelo con un nuevo archivo de datos.
 @app.post("/retrain_model_with_new_datafile")
 async def retrain_model_with_new_datafile(file: UploadFile = File(...)):
 
@@ -108,6 +108,7 @@ async def retrain_model_with_new_datafile(file: UploadFile = File(...)):
 
     return {"message": "Model Retrained Successfully"}
     
+# ejecuta el modelo con los datos de prueba y devuelve las métricas de evaluación y los tokens más significativos de cada clase.
 @app.get("/test_model")
 async def test_model():
     global df 
@@ -155,6 +156,7 @@ async def test_model():
         **tokens_dict
     }
     
+# predice la clase de una nueva review.
 @app.post("/predict")
 async def predict(review: Union[Review, None] = None):
     global model
@@ -186,3 +188,33 @@ async def predict(review: Union[Review, None] = None):
         "predicted probabilites for each class": predict_proba
         }
     
+# predice la clase de un conjunto de reviews pasados como archivo .csv
+@app.post("/predict_from_datafile")
+async def predict_from_datafile(file: UploadFile = File(...)):
+    global model
+    
+    try:
+        df = pd.read_csv(file.file, sep=',')
+        
+        # Verifica si el dataframe tiene exactamente una columna
+        if len(df.columns) != 1:
+            raise HTTPException(status_code=422, detail="CSV file must contain exactly one column: 'Review'")
+        
+        df.columns = ['Review']
+        
+        prueba_classified = model.predict(df)
+        df['Class'] = prueba_classified
+        user_path = os.path.expanduser('~')
+        df.to_csv(f'{user_path}/prueba_clasificados.csv', index=False)
+        
+    except pd.errors.ParserError:
+        # Si ocurre algun error durante el parsing del archivo
+        raise HTTPException(status_code=422, detail="Error parsing CSV file")
+    
+    except Exception as e:
+        # Si ocurre algun otro error
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    return {
+        "message": "Exito! Se ha creado un nuevo archivo 'prueba_clasificados.csv' con las predicciones. Encuentrelo en la carpeta data."
+        }
