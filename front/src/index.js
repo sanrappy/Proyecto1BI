@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import Califvar from './Califvar';
 import Parrafo from './Parrafo';
 import Subarchivo from './Subarchivo';
 import reportWebVitals from './reportWebVitals';
@@ -16,6 +17,7 @@ root.render(
         <Route exact path="/" element={<App />} />
         <Route path="/parrafo" element={<Parrafo />} />
         <Route path="/subarchivo" element={<Subarchivo />} />
+        <Route path="/califvar" element={<Califvar />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -3,11 +3,10 @@ import HomeIcon from './HomeIcon';
 import './Parrafo.css';
 import React, { createRef, useState } from "react";
 
-const Subarchivo = () => {
+const Califvar = () => {
     const file = createRef();
     const [fileName, setFileName] = useState('Seleccione un archivo');
     const [mensaje, setMensaje] = useState('');
-    const [resultados, setResultados] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleFileChange = (e) => {
@@ -32,7 +31,7 @@ const Subarchivo = () => {
 
             console.log('Sending: ', formData);
 
-            const response = await fetch('http://localhost:8000/retrain_model_with_new_datafile', {
+            const response = await fetch('http://localhost:8000/predict_from_datafile', {
                 method: 'POST',
                 body: formData,
             });
@@ -45,28 +44,6 @@ const Subarchivo = () => {
             console.log(data);
             setIsLoading(false);
             setMensaje(data['message']);
-        } catch (error) {
-            console.error('There was a problem with the fetch operation: ', error);
-        }
-    }
-    async function handleResults(event) {
-        event.preventDefault();
-        try {
-            const response = await fetch('http://localhost:8000/test_model', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log(data);
-            setResultados(data);
-
         } catch (error) {
             console.error('There was a problem with the fetch operation: ', error);
         }
@@ -115,16 +92,11 @@ const Subarchivo = () => {
                                 <div className="flex text-xs justify-center mx-auto font-mono">{mensaje}</div>
                             )
                         )}
-                        <button className="ml-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 w-full" onClick={handleResults}>Mostrar resultados</button>
-                        {resultados && Object.entries(resultados).map(([key, value]) => (
-                            <div className="flex text-[10px] justify-center leading-[10px] font-mono mx-auto">{key}: {value}</div>
-                        ))}
                     </div>
                 </div>
-
-            </main >
+            </main>
         </>
     );
 }
 
-export default Subarchivo;
+export default Califvar;

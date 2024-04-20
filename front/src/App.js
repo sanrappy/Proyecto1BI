@@ -13,8 +13,11 @@ function App() {
           </Link>
           <div className="ml-auto flex space-x-4 items-end">
             <Link className="font-medium text-white hover:underline dark:text-gray-50" to="/parrafo">
-              Insertar Párrafo
+              Insertar Reseña
             </Link>
+            <Link className="font-medium text-white hover:underline dark:text-gray-50" to="/califvar">
+                            Insertar Reseñas
+                        </Link>
             <Link className="font-medium text-white hover:underline dark:text-gray-50" to="/subarchivo">
               Subir un archivo
             </Link>
