@@ -1,5 +1,5 @@
 ### Proyecto 1 BI - Etapa 1 & 2
-<br>
+
 #### Integrantes:
 - Juan Andrés Jaramillo - 201821305
 - Nicole Murillo - 202025521
