@@ -205,7 +205,7 @@ async def predict_from_datafile(file: UploadFile = File(...)):
         prueba_classified = model.predict(df)
         df['Class'] = prueba_classified
         user_path = os.path.expanduser('~')
-        df.to_csv(f'{user_path}/prueba_clasificados.csv', index=False)
+        df.to_csv(f'{user_path}/resenas_clasificadas.csv', index=False)
         
     except pd.errors.ParserError:
         # Si ocurre algun error durante el parsing del archivo
@@ -216,5 +216,5 @@ async def predict_from_datafile(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
     
     return {
-        "message": "Exito! Se ha creado un nuevo archivo 'prueba_clasificados.csv' con las predicciones. Encuentrelo en la carpeta data."
+        "message": "Exito! Se ha creado un nuevo archivo 'resenas_clasificadas.csv' con las predicciones. Encuentrelo en la carpeta ~/users/<usuarioActivo>."
         }
