@@ -15,7 +15,7 @@
 #### Para ejecutar el proyecto:
 
 - Se recomienda que cree un ambiente virtual de Python con la version 3.10.12
-- instale las siguientes dependencias:
+- Instale las siguientes dependencias:
 - pip install fastAPI
 - pip install "uvicorn[standard]"
 - pip install nltk
